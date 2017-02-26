@@ -1,12 +1,18 @@
-<p id="notice"><%= notice %></p>
 
 <h1>Users</h1>
 
-<table>
+<table class="table table-hoovered">
   <tbody>
     <% @users.each do |user| %>
       <tr>
         <td><%= link_to user.username, user %></td>
+        <td>
+          <% unless session[:user_id].nil? %>
+            <% if admin_user && user.blocked? %>
+              <span class="label label-info">account frozen</span>
+            <% end %>
+          <% end %>
+        </td>
       </tr>
     <% end %>
   </tbody>

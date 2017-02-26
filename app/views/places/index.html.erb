@@ -1,8 +1,7 @@
-<p id="notice"><%= notice %></p>
 
 <%= form_tag places_path do %>
   city <%= text_field_tag :city, params[:city] %>
-  <%= submit_tag "Search" %>
+  <%= submit_tag "Search" , class:'btn btn-success'%>
 <% end %>
 
 <% if @weather %>
@@ -24,11 +23,11 @@
   <h4>No locations known...</h4>
 <% elsif @places %>
   <h4>Places to get your beer</h4>
-  <table>
+  <table class="table table-hoovered">
     <thead>
-      <td>name</td>
+      <td><strong>name</td>
       <% Place.rendered_fields.each do |f| %>
-        <td><%=f %></td>
+        <td><strong><%=f %></strong></td>
       <% end %>
     </thead>
     <% @places.each do |place| %>

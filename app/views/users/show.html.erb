@@ -1,6 +1,12 @@
-<p id="notice"><%= notice %></p>
 
-<h2> <%= @user.username %> </h2>
+<h2>
+  <%= @user.username %>
+  <% unless session[:user_id].nil? %>
+    <% if current_user && @user.blocked? %>
+      <span class="label label-info">account frozen</span>
+    <% end %>
+  <% end %>
+</h2>
 
 <p>Has made <%= @user.ratings.count %> ratings</p>
 
@@ -20,7 +26,7 @@
   <p> Favorite brewery: <%= @user.favorite_brewery.name %> </p>
   <p> Favorite style: <%= @user.favorite_style %> </p>
 
-  <p> average rating <%= @user.average_rating %></p>
+  <p> average rating <%= round(@user.average_rating) %></p>
 
   <h3>ratings</h3>
 
@@ -38,7 +44,13 @@
 <% end %>
 
 
-<% if @user==current_user%>
-  <%= link_to 'change password', edit_user_path(@user) %> <br>
-  <%= link_to 'destroy', @user, method: :delete, data: { confirm: 'Are you sure?' }  %> 
+<% if @user == current_user %>
+  <%= link_to 'change password', edit_user_path(current_user), class:'btn btn-success' %> <br>
+  <%= link_to 'destroy', current_user, method: :delete, data: { confirm: 'Are you sure?' }, class: 'btn btn-danger' %>
+<% end %>
+<% unless session[:user_id].nil? %>
+  <%if admin_user %>
+    <% label = @user.blocked? ? 'reactivate' : 'freeze' %>
+    <%= link_to label, block_user_path(@user.id), method: :post, class: "btn btn-danger" %>
+  <% end %>
 <% end %>

@@ -3,7 +3,7 @@ class ApplicationController < ActionController::Base
   # For APIs, you may want to use :null_session instead.
   protect_from_forgery with: :exception
 
-  helper_method :current_user
+  helper_method :current_user, :admin_user
 
   def current_user
     return nil if session[:user_id].nil?
@@ -12,5 +12,14 @@ class ApplicationController < ActionController::Base
 
   def ensure_that_signed_in
     redirect_to signin_path, notice:'you should be signed in' if current_user.nil?
-  end  
+  end
+
+  def admin_user
+    current_user.admin?
+  end
+
+  def ensure_that_admin
+    redirect_to signin_path, notice:'you should be registered (and signed in) as admin user' unless current_user.admin?
+  end
+
 end

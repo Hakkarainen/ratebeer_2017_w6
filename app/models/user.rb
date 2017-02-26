@@ -13,16 +13,25 @@ class User < ActiveRecord::Base
                        length: { minimum: 3, maximum: 30 }
   validates :password, length: { minimum: 4 }   
   validates :password, format: { with: /([A-Z].*\d)|(\d.*[A-Z].*)/,
-              message: "should contain one number and one capital letter" }   
+              message: "should contain one number and one capital letter" }
+
+  def self.top(n)
+    sorted_by_time_in_desc_order = User.all.sort_by{ |b| -b.ratings.count }
+    sorted_by_time_in_desc_order[0, n]
+  end
+
+  def most_active_raters
+    return nil if ratings.empty?
+    user.ratings.count.order(:desc)
+  end
 
   def favorite_beer
     return nil if ratings.empty?   
-    ratings.order(score: :desc).limit(1).first.beer            
+    ratings.order(score: :desc).first.beer
   end              
 
   def favorite_brewery
-    return nil if ratings.empty? 
-    
+    return nil if ratings.empty?
     ratings_of_breweries = ratings.group_by { |r| r.beer.brewery }
     averages_of_breweries = []
     ratings_of_breweries.each do |brewery, ratings|
@@ -35,8 +44,7 @@ class User < ActiveRecord::Base
   end  
 
   def favorite_style
-    return nil if ratings.empty? 
-    
+    return nil if ratings.empty?
     ratings_of_styles = ratings.group_by { |r| r.beer.style }
     averages_of_styles = []
     ratings_of_styles.each do |style, ratings|

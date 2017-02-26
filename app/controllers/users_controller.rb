@@ -1,5 +1,7 @@
 class UsersController < ApplicationController
-  before_action :set_user, only: [:show, :edit, :update, :destroy]
+  before_action :set_user, only: [:show, :edit, :update, :block, :destroy]
+  before_action :ensure_that_signed_in, except: [:index, :show]
+  before_action :ensure_that_admin, only: [:block, :destroy]
 
   # GET /users
   # GET /users.json
@@ -10,6 +12,7 @@ class UsersController < ApplicationController
   # GET /users/1
   # GET /users/1.json
   def show
+    @user = User.find(params[:id])
   end
 
   # GET /users/new
@@ -19,6 +22,13 @@ class UsersController < ApplicationController
 
   # GET /users/1/edit
   def edit
+  end
+
+  def block
+    user = User.find(params[:id])
+    user.update_attribute :blocked, (not user.blocked)
+    new_status = user.blocked? ? "frozen" : "active"
+    redirect_to :back, notice:"brewery activity status changed to #{new_status}"
   end
 
   # POST /users
@@ -54,7 +64,7 @@ class UsersController < ApplicationController
   # DELETE /users/1
   # DELETE /users/1.json
   def destroy
-    @user.destroy if @user==current_user 
+    @user.destroy if @user == current_user
     respond_to do |format|
       format.html { redirect_to users_url, notice: 'User was successfully destroyed.' }
       format.json { head :no_content }
